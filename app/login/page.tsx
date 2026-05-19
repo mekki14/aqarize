@@ -22,11 +22,14 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await signIn.email({
+      const { error } = await signIn.email({
         email,
         password,
         callbackURL: "/dashboard",
       });
+      if (error) {
+        throw new Error(error.message || "فشل تسجيل الدخول");
+      }
       router.push("/dashboard");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "فشل تسجيل الدخول";

@@ -1,6 +1,5 @@
-import { betterFetch } from "@better-fetch/fetch";
 import { NextRequest, NextResponse } from "next/server";
-import type { Session } from "@/lib/auth";
+import { getSessionCookie } from "better-auth/cookies";
 
 const protectedRoutes = ["/dashboard", "/provider"];
 const authRoutes = ["/login", "/register"];
@@ -8,18 +7,7 @@ const authRoutes = ["/login", "/register"];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  let session: Session | null = null;
-  try {
-    const { data } = await betterFetch<Session>("/api/auth/get-session", {
-      baseURL: request.nextUrl.origin,
-      headers: {
-        cookie: request.headers.get("cookie") || "",
-      },
-    });
-    session = data;
-  } catch {
-    session = null;
-  }
+  const sessionCookie = getSessionCookie(request);
 
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
@@ -29,11 +17,11 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
 
-  if (isProtectedRoute && !session) {
+  if (isProtectedRoute && !sessionCookie) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isAuthRoute && session) {
+  if (isAuthRoute && sessionCookie) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

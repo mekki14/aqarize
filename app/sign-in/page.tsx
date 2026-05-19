@@ -17,7 +17,10 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      await signIn.email({ email, password });
+      const { error } = await signIn.email({ email, password });
+      if (error) {
+        throw new Error(error.message || "Failed to sign in");
+      }
       router.push("/dashboard");
       router.refresh();
     } catch (err: unknown) {
