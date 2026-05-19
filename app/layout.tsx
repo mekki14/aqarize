@@ -1,6 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
+import localFont from 'next/font/local';
 import "./globals.css";
+import { cn } from "@/lib/utils";
+import { MapModeProvider } from '@/app/lib/map-mode-context'
+import Footer from "@/app/components/footer";
+import Navbar from "@/app/components/navbar";
+
+// Local font: ThManyah Serif Display for headings
+const thmanyah = localFont({
+  src: [
+    { path: "../public/font/thmanyahserifdisplay-Regular.woff2", weight: '400', style: 'normal' },
+    { path: "../public/font/thmanyahserifdisplay-Bold.woff2", weight: '700', style: 'normal' },
+    { path: "../public/font/thmanyahserifdisplay-Black.woff2", weight: '900', style: 'normal' },
+  ],
+  // Expose CSS variable so we can apply it in the root layout
+  variable: "--font-thmanyah",
+  display: 'swap',
+});
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,10 +43,17 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="ar"
+      dir="rtl"
+      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, inter.variable, thmanyah.variable)}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <MapModeProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </MapModeProvider>
+      </body>
     </html>
   );
 }

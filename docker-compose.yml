@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: aqarize-db
+    restart: always
+    environment:
+      POSTGRES_USER: aqar
+      POSTGRES_PASSWORD: aqar123
+      POSTGRES_DB: aqarize
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
