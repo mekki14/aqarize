@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signUp } from "@/lib/auth-client";
+import { signUp, signIn, signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,12 +37,22 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await signUp.email({
-        name,
-        email,
-        password,
+      await signUp.email({ name, email, password });
+
+      await signIn.email({ email, password });
+
+      const res = await fetch("/api/auth/set-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role }),
       });
-      router.push("/dashboard");
+
+      if (!res.ok) {
+        throw new Error("Failed to set role");
+      }
+
+      await signOut();
+      router.push("/login");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "فشل إنشاء الحساب";
       setError(message);
