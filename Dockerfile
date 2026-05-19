@@ -11,6 +11,8 @@ COPY package.json package-lock.json ./
 RUN npm install
 RUN npm install lightningcss-linux-x64-gnu@1.32.0
 COPY . .
+ARG NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
