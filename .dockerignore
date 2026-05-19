@@ -1,5 +1,9 @@
 node_modules
 .next
 .git
+.gitignore
 *.md
-.env*
+.env
+.env.local
+.vscode
+tsconfig.tsbuildinfo
