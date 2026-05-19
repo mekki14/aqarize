@@ -1,7 +1,6 @@
-FROM node:20-alpine AS base
+FROM node:20-slim AS base
 
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -11,7 +10,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
 FROM base AS runner
