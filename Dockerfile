@@ -3,14 +3,12 @@ FROM node:20-slim AS base
 FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install
 
 FROM base AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
-RUN npm install lightningcss-linux-x64-gnu --no-save
-RUN npm install @tailwindcss/oxide-linux-x64-gnu --no-save
+RUN npm install
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
