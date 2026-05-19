@@ -37,7 +37,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await (signUp.email as any)({
+      await signUp.email({
         name,
         email,
         password,
