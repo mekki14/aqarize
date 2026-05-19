@@ -37,9 +37,23 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await signUp.email({ name, email, password });
+      const signUpResult = await signUp.email({ name, email, password });
+      if (signUpResult.error) {
+        const msg = signUpResult.error.message?.toLowerCase() || "";
+        if (msg.includes("already exists") || msg.includes("user_already_exists")) {
+          throw new Error("هذا البريد الإلكتروني مسجل بالفعل. حاول ببريد آخر أو سجّل الدخول.");
+        } else if (msg.includes("password too short") || msg.includes("password_too_short")) {
+          throw new Error("كلمة المرور قصيرة جداً. يجب أن تكون 8 أحرف على الأقل.");
+        } else if (msg.includes("invalid email")) {
+          throw new Error("البريد الإلكتروني غير صالح.");
+        }
+        throw new Error(signUpResult.error.message || "فشل إنشاء الحساب");
+      }
 
-      await signIn.email({ email, password });
+      const signInResult = await signIn.email({ email, password });
+      if (signInResult.error) {
+        throw new Error(signInResult.error.message || "فشل تسجيل الدخول");
+      }
 
       await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -51,8 +65,6 @@ export default function RegisterPage() {
       });
 
       const data = await res.json();
-      console.log("Set role response:", data);
-
       if (!res.ok) {
         throw new Error(data.error || "Failed to set role");
       }
@@ -60,19 +72,7 @@ export default function RegisterPage() {
       await signOut();
       router.push("/login");
     } catch (err: unknown) {
-      let message = "فشل إنشاء الحساب";
-      if (err instanceof Error) {
-        const msg = err.message.toLowerCase();
-        if (msg.includes("already exists") || msg.includes("user_already_exists")) {
-          message = "هذا البريد الإلكتروني مسجل بالفعل. حاول ببريد آخر أو سجّل الدخول.";
-        } else if (msg.includes("password too short") || msg.includes("password_too_short")) {
-          message = "كلمة المرور قصيرة جداً. يجب أن تكون 8 أحرف على الأقل.";
-        } else if (msg.includes("invalid email")) {
-          message = "البريد الإلكتروني غير صالح.";
-        } else {
-          message = err.message;
-        }
-      }
+      const message = err instanceof Error ? err.message : "فشل إنشاء الحساب";
       setError(message);
     } finally {
       setLoading(false);
