@@ -41,14 +41,20 @@ export default function RegisterPage() {
 
       await signIn.email({ email, password });
 
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       const res = await fetch("/api/auth/set-role", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ role }),
       });
 
+      const data = await res.json();
+      console.log("Set role response:", data);
+
       if (!res.ok) {
-        throw new Error("Failed to set role");
+        throw new Error(data.error || "Failed to set role");
       }
 
       await signOut();
