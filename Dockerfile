@@ -9,6 +9,7 @@ FROM base AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
+RUN npm install lightningcss-linux-x64-gnu@1.32.0
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
