@@ -41,7 +41,6 @@ export default function RegisterPage() {
         name,
         email,
         password,
-        role,
       });
       router.push("/dashboard");
     } catch (err: unknown) {
