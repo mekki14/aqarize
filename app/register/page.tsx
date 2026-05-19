@@ -60,7 +60,19 @@ export default function RegisterPage() {
       await signOut();
       router.push("/login");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "فشل إنشاء الحساب";
+      let message = "فشل إنشاء الحساب";
+      if (err instanceof Error) {
+        const msg = err.message.toLowerCase();
+        if (msg.includes("already exists") || msg.includes("user_already_exists")) {
+          message = "هذا البريد الإلكتروني مسجل بالفعل. حاول ببريد آخر أو سجّل الدخول.";
+        } else if (msg.includes("password too short") || msg.includes("password_too_short")) {
+          message = "كلمة المرور قصيرة جداً. يجب أن تكون 8 أحرف على الأقل.";
+        } else if (msg.includes("invalid email")) {
+          message = "البريد الإلكتروني غير صالح.";
+        } else {
+          message = err.message;
+        }
+      }
       setError(message);
     } finally {
       setLoading(false);
